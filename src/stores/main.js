@@ -1,6 +1,8 @@
 import { defineStore } from "pinia";
-import axios from "axios";
+import { useLocalStorage } from '@vueuse/core'
+import { supabase } from "../supabase";
 
+window.supabase = supabase
 export const useMainStore = defineStore("main", {
   state: () => ({
     /* User */
@@ -14,7 +16,17 @@ export const useMainStore = defineStore("main", {
     /* Sample data (commonly used) */
     clients: [],
     history: [],
+    wcproducts: { "ho": "hola" },
+    tipos: useLocalStorage('tipos', {}),
+    colores: useLocalStorage('colores', {})
+
   }),
+  getters: {
+    // automatically infers the return type as a number
+    doubleCount(state) {
+      return state.count * 2
+    },
+  },
   actions: {
     setUser(payload) {
       if (payload.name) {
@@ -27,18 +39,32 @@ export const useMainStore = defineStore("main", {
         this.userAvatar = payload.avatar;
       }
     },
-
-    fetch(sampleDataKey) {
-      axios
-        .get(`data-sources/${sampleDataKey}.json`)
-        .then((r) => {
-          if (r.data && r.data.data) {
-            this[sampleDataKey] = r.data.data;
-          }
-        })
-        .catch((error) => {
-          alert(error.message);
-        });
+    updateTipos(force) {
+      if (Object.keys(this.tipos).length == 0 || force)
+        supabase
+          .from('tipos')
+          .select()
+          .then((result) => {
+            const { data, error } = result
+            this.tipos = {}
+            for (let tipo of data) {
+              this.tipos[tipo.id] = tipo.slug
+            }
+          })
+    },
+    updateColores(force) {
+      if (Object.keys(this.colores).length == 0 || force)
+        supabase
+          .from('colores')
+          .select()
+          .then((result) => {
+            const { data, error } = result
+            console.log(data)
+            this.colores = {}
+            for (let color of data) {
+              this.colores[color.id] = color.slug
+            }
+          })
     },
   },
 });
