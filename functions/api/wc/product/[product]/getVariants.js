@@ -53,7 +53,6 @@ export async function onRequestGet({ params }) {
     })
   })
   data = await data.json(
-
   )
   if (!data.data?.products?.nodes?.[0]) return Response.json({ error: "No encontrado" }, { status: 404 });
   else data = data.data.products.nodes[0]
